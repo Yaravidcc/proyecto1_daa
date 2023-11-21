@@ -8,137 +8,145 @@ import math
 import os
 
 
+# Función para crear un grafo de malla m x n
 def grafoMalla(m, n, dirigido=False):
-    grafo = Grafo(dirigido)
+    grafo = Grafo(dirigido)  # Crea la clase Grafo
 
-    # Crear nodos
+    # Crea nodos con etiquetas f'{i}-{j}'
     for i in range(m):
         for j in range(n):
-            nodo = Nodo(f'{i}-{j}')
-            grafo.agregar_nodo(nodo)
+            nodo = Nodo(f'{i}-{j}')  # Crea un nodo con etiquetas 'i-j'
+            grafo.agregar_nodo(nodo)  # Agrega el nodo al grafo
 
-    # Crear aristas
+    # Crea aristas entre nodos vecinos en la malla
     for i in range(m):
         for j in range(n):
             if i < m - 1:
+                # Conecta el nodo con el nodo de la fila siguiente
                 arista_horizontal = Arista(grafo.nodos[i * n + j], grafo.nodos[(i + 1) * n + j], dirigido)
-                grafo.agregar_arista(arista_horizontal)
+                grafo.agregar_arista(arista_horizontal)  # Agrega arista al grafo
             if j < n - 1:
+                # Conecta el nodo con el nodo de la columna siguiente
                 arista_vertical = Arista(grafo.nodos[i * n + j], grafo.nodos[i * n + j + 1], dirigido)
-                grafo.agregar_arista(arista_vertical)
+                grafo.agregar_arista(arista_vertical)  # Agrega arista al grafo
 
-    return grafo
+    return grafo  # Grafo creado
 
+# Función para generar un grafo Erdos-Renyi Gn,m
 def grafoErdosRenyi(n, m, dirigido=False, auto=False):
-    grafo = Grafo(dirigido)
+    grafo = Grafo(dirigido)  # Crea la clase Grafo
 
-    # Crear nodos
+    # Crea nodos 
     for i in range(n):
-        nodo = Nodo(str(i))
-        grafo.agregar_nodo(nodo)
+        nodo = Nodo(str(i)) 
+        grafo.agregar_nodo(nodo)  # Agrega nodo al grafo
 
-    # Crear m aristas aleatorias
-    edges = set()
+    edges = set()  # Almacenar las aristas
+    # Crea m aristas aleatorias 
     while len(edges) < m:
         origen = random.randint(0, n - 1)
         destino = random.randint(0, n - 1)
+        # Verifica arista que no esté repetida
         if origen != destino and ((origen, destino) not in edges) and ((destino, origen) not in edges or not dirigido):
-            edges.add((origen, destino))
+            edges.add((origen, destino))  # Agrega la arista al conjunto
             arista = Arista(grafo.nodos[origen], grafo.nodos[destino], dirigido)
-            grafo.agregar_arista(arista)
+            grafo.agregar_arista(arista)  # Agrega arista al grafo
 
-    return grafo
+    return grafo  # Grafo generado
 
+# Función para generar un grafo Gilbert Gn,p
 def grafoGilbert(n, p, dirigido=False, auto=False):
-    grafo = Grafo(dirigido)
+    grafo = Grafo(dirigido)  # Crea la clase Grafo
 
-    # Crear nodos
+    # Crea nodos 
     for i in range(n):
-        nodo = Nodo(str(i))
-        grafo.agregar_nodo(nodo)
+        nodo = Nodo(str(i))  # Crea un nodo 
+        grafo.agregar_nodo(nodo)  # Agrega nodo al grafo
 
-    # Crear aristas con probabilidad p
+    # Crea aristas con probabilidad p
     for i in range(n):
         for j in range(i + 1, n):
-            if random.random() < p:
+            if random.random() < p:  # Verifica si se debe agregar la arista
                 arista = Arista(grafo.nodos[i], grafo.nodos[j], dirigido)
-                grafo.agregar_arista(arista)
+                grafo.agregar_arista(arista)  # Agrega la arista al grafo
 
-    return grafo
+    return grafo  # Grafo generado
 
 def distancia_entre_nodos(nodo1, nodo2):
     # Calcular la distancia euclidiana entre dos nodos
     return math.sqrt((nodo1.x - nodo2.x)**2 + (nodo1.y - nodo2.y)**2)
 
+# Función para generar un grafo Geográfico Gn,r
 def grafoGeografico(n, r, dirigido=False, auto=False):
-    grafo = Grafo(dirigido)
+    grafo = Grafo(dirigido)  # Crea una instancia de la clase Grafo
 
-    # Asignar posiciones aleatorias a los nodos
+    # Asigna posiciones aleatorias a los nodos en un espacio unitario
     for i in range(n):
-        nodo = Nodo(str(i))
-        nodo.x = random.random()
-        nodo.y = random.random()
-        grafo.agregar_nodo(nodo)
+        nodo = Nodo(str(i))  # Crea un nodo con etiqueta numérica
+        nodo.x = random.random()  # Asigna una coordenada x aleatoria
+        nodo.y = random.random()  # Asigna una coordenada y aleatoria
+        grafo.agregar_nodo(nodo)  # Agrega el nodo al grafo
 
-    # Crear aristas según la distancia entre nodos
+    # Crea aristas según la distancia entre nodos, si es menor o igual a r
     for i in range(n):
         for j in range(i + 1, n):
             if distancia_entre_nodos(grafo.nodos[i], grafo.nodos[j]) <= r:
                 arista = Arista(grafo.nodos[i], grafo.nodos[j], dirigido)
-                grafo.agregar_arista(arista)
+                grafo.agregar_arista(arista)  # Agrega la arista al grafo
 
-    return grafo
+    return grafo  # Grafo generado
 
+# Función para generar un grafo Barabasi-Albert Gn,d
 def grafoBarabasiAlbert(n, d, dirigido=False, auto=False):
-    grafo = Grafo(dirigido)
+    grafo = Grafo(dirigido)  # Crea la clase Grafo
 
-    # Crear nodos
+    # Crea nodos 
     for i in range(n):
-        nodo = Nodo(str(i))
-        grafo.agregar_nodo(nodo)
+        nodo = Nodo(str(i))  # Crea un nodo 
+        grafo.agregar_nodo(nodo)  # Agrega el nodo al grafo
 
-    # Conectar los primeros d nodos entre sí
+    # Conecta los primeros d nodos entre sí
     for i in range(min(d, n)):
         for j in range(i + 1, min(d, n)):
             arista = Arista(grafo.nodos[i], grafo.nodos[j], dirigido)
-            grafo.agregar_arista(arista)
+            grafo.agregar_arista(arista)  # Agrega la arista al grafo
 
-    # Conectar nodos restantes
+    # Conecta los nodos restantes con probabilidad proporcional al grado
     for i in range(d, n):
-        # Obtener los nodos a los que se conectará el nuevo nodo
-        target_nodes = random.sample(grafo.nodos[:i], d)
+        target_nodes = random.sample(grafo.nodos[:i], d)  # Selecciona nodos destino
         for node in target_nodes:
             arista = Arista(grafo.nodos[i], node, dirigido)
-            grafo.agregar_arista(arista)
+            grafo.agregar_arista(arista)  # Agrega la arista al grafo
 
-    return grafo
+    return grafo  # Grafo generado
 
+# Función para generar un grafo Dorogovtsev-Mendes
 def grafoDorogovtsevMendes(n, dirigido=False):
-    grafo = Grafo(dirigido)
+    grafo = Grafo(dirigido)  # Crea la clase Grafo
 
-    # Crear 3 nodos y 3 aristas formando un triángulo
+    # Crea 3 nodos y 3 aristas formando un triángulo inicial
     for i in range(3):
-        nodo = Nodo(str(i))
-        grafo.agregar_nodo(nodo)
+        nodo = Nodo(str(i))  # Crea un nodo con etiqueta numérica
+        grafo.agregar_nodo(nodo)  # Agrega el nodo al grafo
 
-    arista1 = Arista(grafo.nodos[0], grafo.nodos[1], dirigido)
+    arista1 = Arista(grafo.nodos[0], grafo.nodos[1], dirigido)  # Crea aristas
     arista2 = Arista(grafo.nodos[1], grafo.nodos[2], dirigido)
     arista3 = Arista(grafo.nodos[2], grafo.nodos[0], dirigido)
-    grafo.agregar_arista(arista1)
+    grafo.agregar_arista(arista1)  # Agrega las aristas al grafo
     grafo.agregar_arista(arista2)
     grafo.agregar_arista(arista3)
 
-    # Agregar nodos restantes
+    # Agrega nodos restantes y conecta con nodos aleatorios existentes
     for i in range(3, n):
-        random_edge = random.choice(grafo.aristas)
-        nuevo_nodo = Nodo(str(i))
-        grafo.agregar_nodo(nuevo_nodo)
-        arista1 = Arista(nuevo_nodo, random_edge.origen, dirigido)
+        random_edge = random.choice(grafo.aristas)  # Elige una arista aleatoria
+        nuevo_nodo = Nodo(str(i))  # Crea un nuevo nodo 
+        grafo.agregar_nodo(nuevo_nodo)  # Agrega el nodo al grafo
+        arista1 = Arista(nuevo_nodo, random_edge.origen, dirigido)  # Crea aristas
         arista2 = Arista(nuevo_nodo, random_edge.destino, dirigido)
-        grafo.agregar_arista(arista1)
+        grafo.agregar_arista(arista1)  # Agrega las aristas al grafo
         grafo.agregar_arista(arista2)
 
-    return grafo
+    return grafo  # Grafo generado
 
 def guardar_grafo_en_archivo(grafo, modelo, n):
     nombre_archivo = f'{modelo}_{n}.dot'
